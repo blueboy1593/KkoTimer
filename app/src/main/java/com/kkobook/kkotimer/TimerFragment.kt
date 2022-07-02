@@ -8,7 +8,6 @@ import android.media.AudioManager
 import android.media.SoundPool
 import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
@@ -129,7 +128,7 @@ class TimerFragment : Fragment() {
             Log.d("kkog", SystemClock.elapsedRealtime().toString())
             Log.d("kkog", viewModel.customTimerDuration.value!!.toString())
             alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + viewModel.customTimerDuration.value!!,
                 pendingIntent
             )
