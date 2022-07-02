@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Kko Timer</string>
+    <string name="app_name">Kkobook Timer</string>
     <!-- Settings Activity Title -->
     <string name="title_activity_settings">SettingsActivity</string>
 

@@ -15,10 +15,12 @@ class TimerView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    lateinit var viewModel: TimerViewModel
+
     private lateinit var center: PointF
     private lateinit var rect: RectF
     private var sweepAngle: Float = 0f
-    private val radius = 300f
+    private val radius = 400f
 
     private val circlePaint =
         Paint().apply {
@@ -37,6 +39,18 @@ class TimerView @JvmOverloads constructor(
             strokeCap = Paint.Cap.ROUND
         }
 
+    private val samplePaint =
+        Paint().apply {
+            isAntiAlias = true
+            color = Color.RED
+            style = Paint.Style.FILL
+        }
+
+    @JvmName("setViewModel1")
+    fun setViewModel(viewModel: TimerViewModel) {
+        this.viewModel = viewModel
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         center = PointF(w/2f, h/2f)
@@ -52,6 +66,10 @@ class TimerView @JvmOverloads constructor(
         super.onDraw(canvas)
         canvas?.drawArc(rect, 0f, 360f, true, circlePaint)
         canvas?.drawArc(rect, -90f, sweepAngle, false, progressPaint)
+
+        // 운이 좋게 의도하게 나온 코드. 기억해두기
+        val kkobookEyeOpen = BitmapFactory.decodeResource(resources, R.drawable.kkobook_eye_open)
+        canvas?.drawBitmap(kkobookEyeOpen, null, rect, null)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -67,14 +85,16 @@ class TimerView @JvmOverloads constructor(
     }
 
     private fun onActionDown(touchCoordinate: PointF) {
-        computeAngle(touchCoordinate)
+        val timeInDegree = computeAngle(touchCoordinate)
+        viewModel.setTime(timeInDegree)
     }
 
     private fun onActionMove(touchCoordinate: PointF) {
-        computeAngle(touchCoordinate)
+        val timeInDegree = computeAngle(touchCoordinate)
+        viewModel.setTime(timeInDegree)
     }
 
-    private fun computeAngle(touchCoordinate: PointF) {
+    private fun computeAngle(touchCoordinate: PointF): Float {
         Log.d("kkog", "touchCoordinate.x : " + touchCoordinate.x + " center.x : " + center.x)
         Log.d("kkog", "touchCoordinate.y : " + touchCoordinate.y + " center.y : " + center.y)
         val xGap = touchCoordinate.x - center.x
@@ -89,5 +109,6 @@ class TimerView @JvmOverloads constructor(
             degree + 360f
         }
         Log.d("kkog", "degree : $sweepAngle")
+        return sweepAngle
     }
 }

@@ -22,8 +22,13 @@ class TimerViewModel : ViewModel() {
         }
     }
 
+    fun setTime(degree: Float) {
+        val longDegree = (degree * 10000).toLong()
+        customTimerDuration.postValue(longDegree)
+    }
+
     companion object {
-        const val MIllIS_IN_FUTURE = 10000L
+        const val MIllIS_IN_FUTURE = 0L
         const val TICK_INTERVAL = 1000L
     }
 }

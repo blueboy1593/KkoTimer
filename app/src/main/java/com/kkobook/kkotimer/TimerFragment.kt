@@ -24,18 +24,33 @@ class TimerFragment : Fragment() {
         viewModel = ViewModelProvider(this)[TimerViewModel::class.java]
 
         viewModel.customTimerDuration.observe(viewLifecycleOwner) {
-            binding.time.text = it.toString()
+            val timeText = convertTime(it)
+            binding.time.text = timeText
         }
 
         binding.buttonStart.setOnClickListener {
             viewModel.timerJob.start()
         }
 
-        binding.buttonReset.setOnClickListener {
-            viewModel.customTimerDuration.value = 10000L
+        binding.buttonStop.setOnClickListener {
+            viewModel.timerJob.cancel()
         }
 
+        binding.buttonReset.setOnClickListener {
+            viewModel.timerJob.cancel()
+            viewModel.customTimerDuration.value = 0L
+        }
+
+        binding.timerView.setViewModel(viewModel)
+
         return binding.root
+    }
+
+    private fun convertTime(timeInMillis: Long): String {
+        val timeInSec = timeInMillis / 1000
+        val min = timeInSec.div(60)
+        val sec = timeInSec.rem(60)
+        return "$min 분 $sec 초"
     }
 
     // Don't use. This is just for CountDownTimer practice.
