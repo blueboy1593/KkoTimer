@@ -22,7 +22,6 @@ import com.kkobook.kkotimer.databinding.FragmentTimerBinding
 class TimerFragment : Fragment() {
     private lateinit var binding: FragmentTimerBinding
     private lateinit var viewModel: TimerViewModel
-    private lateinit var timer: CountDownTimer
     private lateinit var soundPool: SoundPool
     private var kkobookSoundId: Int? = null
 
