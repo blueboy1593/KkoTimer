@@ -2,11 +2,13 @@ package com.kkobook.kkotimer
 
 import android.content.Context
 import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.RequiresApi
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.atan2
 
 class TimerView @JvmOverloads constructor(
@@ -18,9 +20,11 @@ class TimerView @JvmOverloads constructor(
     lateinit var viewModel: TimerViewModel
 
     private lateinit var center: PointF
+    private lateinit var angleCenter: PointF
     private lateinit var rect: RectF
     private var sweepAngle: Float = 0f
     private val radius = 400f
+    private lateinit var kkobookBitmap: Bitmap
 
     private val circlePaint =
         Paint().apply {
@@ -30,20 +34,14 @@ class TimerView @JvmOverloads constructor(
             strokeWidth = 60f
         }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private val progressPaint =
         Paint().apply {
             isAntiAlias = true
-            color = Color.BLUE
+            color = context.resources.getColor(R.color.kkobook, null)
             style = Paint.Style.STROKE
             strokeWidth = 60f
             strokeCap = Paint.Cap.ROUND
-        }
-
-    private val samplePaint =
-        Paint().apply {
-            isAntiAlias = true
-            color = Color.RED
-            style = Paint.Style.FILL
         }
 
     @JvmName("setViewModel1")
@@ -54,12 +52,16 @@ class TimerView @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         center = PointF(w/2f, h/2f)
+        val coordinate = IntArray(2)
+        getLocationOnScreen(coordinate)
+        angleCenter = PointF(coordinate[0] + center.x, coordinate[1] + center.y)
         rect = RectF(
             center.x - radius,
             center.y - radius,
             center.x + radius,
             center.y + radius
         )
+        kkobookBitmap = BitmapFactory.decodeResource(resources, R.drawable.kkobook_eye_open)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -67,9 +69,17 @@ class TimerView @JvmOverloads constructor(
         canvas?.drawArc(rect, 0f, 360f, true, circlePaint)
         canvas?.drawArc(rect, -90f, sweepAngle, false, progressPaint)
 
-        // 운이 좋게 의도하게 나온 코드. 기억해두기
-        val kkobookEyeOpen = BitmapFactory.decodeResource(resources, R.drawable.kkobook_eye_open)
-        canvas?.drawBitmap(kkobookEyeOpen, null, rect, null)
+        canvas?.drawBitmap(kkobookBitmap, null, rect, null)
+    }
+
+    fun drawEyeOpen() {
+        kkobookBitmap = BitmapFactory.decodeResource(resources, R.drawable.kkobook_eye_open)
+        invalidate()
+    }
+
+    fun drawEyeClose() {
+        kkobookBitmap = BitmapFactory.decodeResource(resources, R.drawable.kkobook_eye_close)
+        invalidate()
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -85,30 +95,37 @@ class TimerView @JvmOverloads constructor(
     }
 
     private fun onActionDown(touchCoordinate: PointF) {
-        val timeInDegree = computeAngle(touchCoordinate)
+        val timeInDegree = computeAngle(touchCoordinate, false)
         viewModel.setTime(timeInDegree)
     }
 
     private fun onActionMove(touchCoordinate: PointF) {
-        val timeInDegree = computeAngle(touchCoordinate)
+        val timeInDegree = computeAngle(touchCoordinate, true)
         viewModel.setTime(timeInDegree)
     }
 
-    private fun computeAngle(touchCoordinate: PointF): Float {
-        Log.d("kkog", "touchCoordinate.x : " + touchCoordinate.x + " center.x : " + center.x)
-        Log.d("kkog", "touchCoordinate.y : " + touchCoordinate.y + " center.y : " + center.y)
-        val xGap = touchCoordinate.x - center.x
-        val yGap = center.y - touchCoordinate.y
+    private fun computeAngle(touchCoordinate: PointF, isActionMove: Boolean): Float {
+        val xGap = touchCoordinate.x - angleCenter.x
+        val yGap = angleCenter.y - touchCoordinate.y
         val radian = atan2(xGap, yGap)
         val degree = (radian * 180 / PI).toFloat()
-        Log.d("kkog", "degree : $degree")
 
-        sweepAngle = if (degree >= 0) {
+        val currentAngle = if (degree >= 0) {
             degree
         } else {
             degree + 360f
         }
-        Log.d("kkog", "degree : $sweepAngle")
+        if (isActionMove && abs(sweepAngle - currentAngle) > 50) {
+            // 0에서 360 / 360에서 0. 12시를 드래그로 넘기려고 하는 케이스. 스킵해준다.
+        } else {
+            sweepAngle = currentAngle
+        }
+
         return sweepAngle
+    }
+
+    fun resetTimer() {
+        sweepAngle = 0f
+        invalidate()
     }
 }

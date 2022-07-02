@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.kkobook.kkotimer.databinding.ActivityMainBinding
 
+
 class MainActivity : AppCompatActivity() {
     private lateinit var timerFragment: TimerFragment
     private lateinit var settingsFragment: SettingsFragment
