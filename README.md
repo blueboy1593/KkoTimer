@@ -1,5 +1,11 @@
 # KkoTimer
 
+## Screenshots
+
+<img width="332" alt="스크린샷 2022-07-03 오전 5 50 41" src="https://user-images.githubusercontent.com/52685277/177015876-840df4d2-9310-4ffe-98ee-66a45a78eaad.png"><img width="332" alt="스크린샷 2022-07-03 오전 5 50 54" src="https://user-images.githubusercontent.com/52685277/177015884-651f7e86-79da-4281-9a86-e28e585ff629.png">
+<img width="331" alt="스크린샷 2022-07-03 오전 5 51 15" src="https://user-images.githubusercontent.com/52685277/177015885-3c0046a2-89b6-4996-88f9-266f887718c9.png">
+
+
 
 ## 타이머 앱 만들기 요구 사항
 - 원형 프로그레스바를 사용한 타이머 구현하기
